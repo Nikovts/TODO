@@ -1,71 +1,36 @@
 <template>
   <div class="todos">
-    <b-modal ref="add-project" hide-footer title="Add New Project">
-      <b-form @submit="onSubmit" @reset="onReset">
-        <b-form-group id="input-group-1" label="Project name:" label-for="input-1">
-          <b-form-input
-            id="input-1"
-            v-model="newProject.name"
-            placeholder="Enter project name"
-            required
-            class="margin-y"
-          ></b-form-input>
-        </b-form-group>
-        <b-button type="submit" variant="primary" class="mr-2">Submit</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
-      </b-form>
-    </b-modal>
-    <b-modal ref="add-todo" hide-footer title="Add New Todo">
-      <b-form @submit="onSubmitTodo" @reset="onResetTodo">
-        <b-form-group id="input-group-1" label="Todo name:" label-for="input-1">
-          <b-form-input
-            id="input-1"
-            v-model="newTodo.name"
-            placeholder="Enter todo name"
-            required
-            class="margin-y"
-          ></b-form-input>
-        </b-form-group>
-        <b-form-group id="input-group-2" label="Todo description:" label-for="input-2">
-          <b-form-textarea
-            id="input-2"
-            v-model="newTodo.description"
-            placeholder="Enter todo description"
-            required
-            class="margin-y"
-            rows="3"
-            max-rows="6"
-          ></b-form-textarea>
-        </b-form-group>
-        <b-form-group id="input-group-3" label="Please select project" label-for="input-3">
-          <b-form-select
-            id="input-2"
-            v-model="selectedProject"
-            :options="options"
-            required
-            class="margin-y"
-          ></b-form-select>
-        </b-form-group>
-        <b-button type="submit" variant="primary" class="mr-2">Submit</b-button>
-        <b-button type="reset" variant="danger">Reset</b-button>
-      </b-form>
-    </b-modal>
+    <add-project-modal v-if="openProjectModal" @addProject="addProject"  @close="openProjectModal=false"/>
+    <add-todo-modal v-if="openTodoModal" :options="options" @addTodo="addTodo"  @close="openTodoModal=false"/>
     <div>
       <div v-if="todos.length > 0" class="px-3">
         <div class="header">
           <h2>Todos</h2>
-          <b-button variant="primary" @click="showTodosModal">Add todo</b-button>
+          <b-button variant="primary" @click="openTodoModal=true">Add todo</b-button>
         </div>
         <b-table
+          id="todos-table"
+          :per-page="perPage"
+          :current-page="currentPage"
           striped
           hover
           :items="todos"
+          :fields="fields"
           :fixed="true"
           table-variant="primary"
           class="table"
           selectable
           @row-selected="onRowSelected"
+          label-sort-asc=""
+          label-sort-desc=""
+          label-sort-clear=""
         ></b-table>
+        <b-pagination
+          v-model="currentPage"
+          :total-rows="rows"
+          :per-page="perPage"
+          aria-controls="todos-table"
+        ></b-pagination>
       </div>
 
       <div class="no-todos" v-if="todos.length === 0"  >
@@ -80,12 +45,12 @@
         >
           <div v-if="projects.length>0">
             <b-card-text class="no-todos-card-text"> You have no todos yet.</b-card-text>
-            <b-button variant="primary" @click="showTodosModal">Add todo</b-button>
+            <b-button variant="primary" @click="openTodoModal=true">Add todo</b-button>
           </div>
           <div v-else>
             <b-card-text class="no-todos-card-text"> You have no todos and projects yet. </b-card-text>
             <b-card-text > To cteate new todo, first you have to create project.</b-card-text>
-            <b-button variant="primary" @click="showProjectModal">Add project</b-button>
+            <b-button variant="primary" @click="openProjectModal=true">Add project</b-button>
           </div>
         </b-card>
       </div>
@@ -94,31 +59,60 @@
 </template>
 
 <script>
-import { BButton, BCard, BModal, BForm, BTable } from 'bootstrap-vue';
+import { BButton, BCard, BTable, BPagination } from 'bootstrap-vue';
+import AddProjectModal from '../components/AddProjectModal.vue';
+import AddTodoModal from '../components/AddTodoModal.vue';
+
 export default {
   name: 'Todos',
-  components: { BButton, BCard, BModal, BForm, BTable},
+  components: { BButton, BCard, BTable, BPagination, AddProjectModal, AddTodoModal},
   data(){
     return{
-      fields: ['id','name', 'todos'],
+
+      fields: [
+        {
+          key: 'id',
+          label: 'ID',
+          sortable: true
+        },
+        {
+          key: 'name',
+          sortable: true
+        },
+        {
+          key: 'user',
+          sortable: true
+        },
+        {
+          key: 'description',
+          sortable: false
+        },
+        {
+          key: 'projectId',
+          label: 'Project ID',
+          sortable: true
+        },
+        {
+          key: 'projectName',
+          sortable: true
+        },
+        {
+          key: 'state',
+          sortable: true
+        },
+        {
+          key: 'viewed',
+          sortable: true
+        },
+
+      ],
+      perPage: 10,
+      currentPage: 1,
       projects: [],
       todos: [],
       options: [],
-      selectedProject:{},
-      newProject: {
-        name: '',
-        todos: []
-      },
-      newTodo: {
-        id:'',
-        name: '',
-        user: 'User',
-        description: '',
-        projectId: '',
-        projectName: '',
-        state: 'Todo',
-        viewed: 0
-      }
+      openTodoModal: false,
+      openProjectModal: false
     }
   },
   created(){
@@ -145,68 +139,26 @@ export default {
         }
       });
     },
-    showTodosModal(t) {
-      this.$refs['add-todo'].show();
-    },
-    hideTodosModal() {
-      this.$refs['add-todo'].hide();
-    },
-    showProjectModal() {
-      this.$refs['add-project'].show();
-     },
-    hideProjectModal() {
-        this.$refs['add-project'].hide();
-    },
-    onSubmit(event) {
-      event.preventDefault();
-
-      this.projects=JSON.parse(localStorage.getItem('projects')) ? JSON.parse(localStorage.getItem('projects')) : [];
-      this.newProject.id = this.projects.length + 1;
-      this.projects.push(this.newProject)
-      localStorage.setItem('projects',JSON.stringify(this.projects));
-
-      this.hideProjectModal();
-      this.newProject.name = '';
+    addProject() {
+      this.openProjectModal = false;
       this.projects=JSON.parse(localStorage.getItem('projects')) ? JSON.parse(localStorage.getItem('projects')) : [];
       this.setProjects();
     },
-    onReset(event) {
-      event.preventDefault();
-      this.newProject.name = '';
-    },
-    onSubmitTodo(event) {
-      event.preventDefault();
-
-      this.newTodo.projectId = this.selectedProject.id;
-      this.newTodo.projectName = this.selectedProject.name;
-
-      let lastId = 0;
-      this.todos[this.todos.length-1] ? lastId=this.todos[this.todos.length-1].id : null;
-      this.newTodo.id = lastId+ 1;
-      this.todos.push(this.newTodo);
-      localStorage.setItem('todos',JSON.stringify(this.todos));
-
-      this.hideTodosModal();
-      this.newTodo.id = '';
-      this.newTodo.name = '';
-      this.newTodo.projectId = '';
-      this.newTodo.projectName ='';
-      this.newTodo.description = '';
-
+    addTodo() {
+      this.openTodoModal = false;
+      this.options = [];
       this.projects=JSON.parse(localStorage.getItem('projects')) ? JSON.parse(localStorage.getItem('projects')) : [];
       this.todos=JSON.parse(localStorage.getItem('todos')) ?  JSON.parse(localStorage.getItem('todos')) : [];
       this.setProjects();
     },
-    onResetTodo(event) {
-      event.preventDefault();
-
-      this.newTodo.name = '';
-      this.newTodo.description = '';
-      this.selectedProject = {};
-    },
     onRowSelected(items) {
       this.$router.push({name: 'TodoViewPage', params: { id: items[0].id }});
     },
+  },
+  computed: {
+    rows() {
+      return this.todos.length;
+    }
   }
 };
 </script>

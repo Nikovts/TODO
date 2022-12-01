@@ -7,52 +7,62 @@
       header-bg-variant="primary"
       header-text-variant="white"
       header-class="todo-card-header"
-      align="center"
+
     >
       <h5 v-if="index === -1">There is no Todo with ID {{$route.params.id}}</h5>
-      <b-card-body v-else>
+      <div v-else class="flex">
 
-
-      <div class="todo-card-text description">
-        <span class="todo-card-text-key"> Description:</span>
-        <span class="todo-card-text-value"> {{todo.description}}</span>
+        <div class="todo-card-text-description">
+          <h5 class="todo-card-text-key "> Description</h5>
+          <p class="todo-card-text-description-text"> {{todo.description}}</p>
+          <div class="todo-card-text">
+            <span> Delete todo <span class="todo-card-text-key ">{{todo.name}}</span></span>
+            <span class="todo-card-text-value"> <b-button variant="danger" @click="deleteTodo">DELETE</b-button></span>
+          </div>
+        </div>
+        <div class="todo-card-details">
+          <div class="flex">
+            <h6>Details</h6>
+            <b-form-select
+              v-model="todo.state"
+              size="sm"
+              @change="changeState"
+              style="color:white"
+              :class="todo.state === 'Todo' ? 'bg-primary': 'bg-success'"
+            >
+            <b-form-select-option class="bg-info" value="Todo">To Do</b-form-select-option>
+            <b-form-select-option class="bg-info" value="Done">Done</b-form-select-option>
+            </b-form-select>
+          </div>
+          <hr class="my-2">
+          <div class="todo-card-text">
+            <span class="todo-card-text-key"> ID</span>
+            <span class="todo-card-text-value"> {{todo.id}}</span>
+          </div>
+          <div class="todo-card-text">
+            <span class="todo-card-text-key"> User</span>
+            <span class="todo-card-text-value"> {{todo.user}}</span>
+          </div>
+          <div class="todo-card-text">
+            <span class="todo-card-text-key"> Project Name</span>
+            <span class="todo-card-text-value"> {{todo.projectName}}</span>
+          </div>
+          <div class="todo-card-text">
+            <span class="todo-card-text-key"> Viewed</span>
+            <span class="todo-card-text-value"> {{todo.viewed}}</span>
+          </div>
+        </div>
       </div>
-      <div class="todo-card-text">
-        <span class="todo-card-text-key"> User:</span>
-        <span class="todo-card-text-value"> {{todo.user}}</span>
-      </div>
-      <div class="todo-card-text">
-        <span class="todo-card-text-key"> Project Name:</span>
-        <span class="todo-card-text-value"> {{todo.projectName}}</span>
-      </div>
-      <div class="todo-card-text">
-        <span class="todo-card-text-key"> State:</span>
-        <span class="todo-card-text-value"> {{todo.state}}</span>
-      </div>
-      <div class="todo-card-text">
-        <span class="todo-card-text-key"> Viewed:</span>
-        <span class="todo-card-text-value"> {{todo.viewed}}</span>
-      </div>
-      <div class="todo-card-text" v-if="todo.state === 'Todo'">
-        <span class="todo-card-text-key"> Mark state as Done:</span>
-        <span class="todo-card-text-value"> <b-button variant="primary" @click="done">DONE</b-button></span>
-      </div>
-      <div class="todo-card-text">
-        <span class="todo-card-text-key"> Delete todo <em>{{todo.name}}</em>:</span>
-        <span class="todo-card-text-value"> <b-button variant="danger" @click="deleteTodo">DELETE</b-button></span>
-      </div>
-    </b-card-body>
-
     </b-card>
   </div>
 </template>
 
 <script>
 
-import { BButton, BCard } from 'bootstrap-vue';
+import { BButton, BCard, BFormSelect} from 'bootstrap-vue';
 export default {
   name: 'TodoView',
-  components: { BButton, BCard},
+  components: { BButton, BCard, BFormSelect},
   data(){
     return{
       todos: [],
@@ -67,7 +77,17 @@ export default {
         state: '',
         viewed: 0
       },
-      index: ''
+      index: '',
+      stateOptions: [
+        {
+          value: 'Done',
+          text: 'DONE'
+        },
+        {
+          value: 'Todo',
+          text: 'TODO'
+        },
+      ]
     }
   },
   created(){
@@ -87,9 +107,8 @@ export default {
         this.todo = this.todos[this.index];
       };
     },
-    done() {
-      this.todo.state = 'Done';
-      this.todos[this.index].state = 'Done';
+    changeState(value) {
+      this.todos[this.index].state = value;
       localStorage.setItem('todos',JSON.stringify(this.todos));
     },
     deleteTodo() {
@@ -110,10 +129,15 @@ export default {
   justify-content: center;
 
   .todo-card {
-    width: 35rem;
+    width: 45rem;
     margin-top: 12rem;
     .todo-card-header {
       font-size: 2rem;
+      display: flex;
+    }
+    .flex {
+      display: flex;
+      padding: 0;
     }
     .todo-card-text {
       margin-top: 1rem;
@@ -123,16 +147,49 @@ export default {
       .todo-card-text-key {
         font-weight: 700;
         width: 50%;
-        text-align: end;
+        text-align: start;
       }
       .todo-card-text-value {
         margin-left: 0.5rem;
         width: 50%;
         text-align: start;
       }
-      &.description {
-      align-items: flex-start;
     }
+    .todo-card-text-description {
+      width: 60%;
+      display: flex;
+      flex-direction: column;
+      .todo-card-text {
+        margin-top: auto;
+        display: flex;
+        align-items: flex-end;
+      }
+      .todo-card-text-description-text {
+        background-color: lightgray;
+        height: 80%;
+        margin-right: 1rem;
+        border-radius: calc(0.375rem - 1px);
+        margin-top: 0.25rem;
+        padding-left: 0.5rem;
+      }
+      .todo-card-text-key {
+        font-weight: 700;
+      }
+      .todo-card-text-value {
+        margin-left: 1rem;
+        width: auto;
+        text-align: start;
+        margin-right: 1rem;
+      }
+    }
+    .todo-card-details {
+      width: 40%;
+      .flex {
+        display: flex;
+        justify-content: space-between;
+        padding: 0;
+        align-items: baseline;
+      }
     }
   }
 }

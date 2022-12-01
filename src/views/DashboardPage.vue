@@ -2,13 +2,10 @@
   <div class="home">
     <b-jumbotron>
       <template #header>Todo manager</template>
-
       <template #lead>
         This is a Todo manager app, where you can make projects and create and manage todo’s in the project.
       </template>
-
       <hr class="my-4">
-
       <p>
         You can view currently available projects and tasks, as well as create new ones.
       </p>
@@ -23,7 +20,6 @@
 <script>
 
 import { BJumbotron, BButton } from 'bootstrap-vue';
-// @ is an alias to /src
 
 export default {
   name: 'Dashboard',
@@ -34,7 +30,7 @@ export default {
 </script>
 <style  lang="scss">
   .home{
-    margin-top: 7rem;
+    margin-top: 10rem;
     text-align: center;
     .btn{
       margin:0 0.5rem;

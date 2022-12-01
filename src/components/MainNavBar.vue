@@ -7,7 +7,7 @@
     </b-navbar-nav>
     <b-navbar-nav class="ml-auto">
       <b-nav-text>
-        User
+        Nikovts
       </b-nav-text>
     </b-navbar-nav>
   </b-navbar>
