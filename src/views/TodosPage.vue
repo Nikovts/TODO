@@ -24,7 +24,11 @@
           label-sort-asc=""
           label-sort-desc=""
           label-sort-clear=""
-        ></b-table>
+        >
+          <template #cell(state)="data">
+            <b :class="data.value === 'Todo' ? 'text-primary' : 'text-success'">{{ data.value }}</b>
+          </template>
+        </b-table>
         <b-pagination
           v-model="currentPage"
           :total-rows="rows"
@@ -80,7 +84,7 @@ export default {
           sortable: true
         },
         {
-          key: 'user',
+          key: 'assignee',
           sortable: true
         },
         {
@@ -103,6 +107,11 @@ export default {
         {
           key: 'viewed',
           sortable: true
+        },
+        {
+          key: 'created',
+          sortable: true,
+          formatter: 'parseDate'
         },
 
       ],
@@ -154,6 +163,10 @@ export default {
     onRowSelected(items) {
       this.$router.push({name: 'TodoViewPage', params: { id: items[0].id }});
     },
+    parseDate(value) {
+      let date = new Date(value);
+      return date.toLocaleDateString("en-GB");
+    }
   },
   computed: {
     rows() {

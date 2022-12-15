@@ -40,8 +40,8 @@
             <span class="todo-card-text-value"> {{todo.id}}</span>
           </div>
           <div class="todo-card-text">
-            <span class="todo-card-text-key"> User</span>
-            <span class="todo-card-text-value"> {{todo.user}}</span>
+            <span class="todo-card-text-key"> Assignee</span>
+            <span class="todo-card-text-value"> {{todo.assignee}}</span>
           </div>
           <div class="todo-card-text">
             <span class="todo-card-text-key"> Project Name</span>
@@ -50,6 +50,10 @@
           <div class="todo-card-text">
             <span class="todo-card-text-key"> Viewed</span>
             <span class="todo-card-text-value"> {{todo.viewed}}</span>
+          </div>
+          <div class="todo-card-text">
+            <span class="todo-card-text-key"> Created</span>
+            <span class="todo-card-text-value"> {{new Date(todo.created).toLocaleDateString("en-GB")}}</span>
           </div>
         </div>
       </div>

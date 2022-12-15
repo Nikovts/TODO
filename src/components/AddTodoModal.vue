@@ -21,9 +21,17 @@
           max-rows="6"
         ></b-form-textarea>
       </b-form-group>
-      <b-form-group id="input-group-3" label="Please select project" label-for="input-3">
+      <b-form-group id="input-group-3" label="Assign to" label-for="input-3">
         <b-form-select
-          id="input-2"
+          id="input-3"
+          v-model="newTodo.assignee"
+          :options="assignees"
+          class="margin-y"
+        ></b-form-select>
+      </b-form-group>
+      <b-form-group id="input-group-4" label="Please select project" label-for="input-4">
+        <b-form-select
+          id="input-4"
           v-model="selectedProject"
           :options="options"
           required
@@ -48,15 +56,21 @@ export default {
       newTodo: {
         id:'',
         name: '',
-        user: 'User',
+        assignee: 'Unassigned',
         description: '',
         projectId: '',
         projectName: '',
         state: 'Todo',
-        viewed: 0
+        viewed: 0,
+        created: ''
       },
       selectedProject:{},
-      todos:[]
+      todos:[],
+      assignees: [
+        'User 1',
+        'User 2',
+        'User 3'
+      ],
     }
   },
   props: {
@@ -88,6 +102,7 @@ export default {
       let lastId = 0;
       this.todos[this.todos.length-1] ? lastId=this.todos[this.todos.length-1].id : null;
       this.newTodo.id = lastId+ 1;
+      this.newTodo.created = Date();
       this.todos.push(this.newTodo);
       localStorage.setItem('todos',JSON.stringify(this.todos));
 
@@ -98,7 +113,8 @@ export default {
       this.newTodo.projectId = '';
       this.newTodo.projectName ='';
       this.newTodo.description = '';
-
+      this.newTodo.assignee = 'Unassigned';
+      this.newTodo.created = '';
     },
     onResetTodo(event) {
       event.preventDefault();
@@ -106,6 +122,7 @@ export default {
       this.newTodo.name = '';
       this.newTodo.description = '';
       this.selectedProject = {};
+      this.newTodo.assignee = 'Unassigned';
     },
   }
 }
