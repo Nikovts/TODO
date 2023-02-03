@@ -23,16 +23,16 @@
         <div class="todo-card-details">
           <div class="flex">
             <h6>Details</h6>
-            <b-form-select
+            <select
               v-model="todo.state"
               size="sm"
               @change="changeState"
-              style="color:white"
+              style="color:white; width: 50%;"
               :class="todo.state === 'Todo' ? 'bg-primary': 'bg-success'"
             >
-            <b-form-select-option class="bg-info" value="Todo">To Do</b-form-select-option>
-            <b-form-select-option class="bg-info" value="Done">Done</b-form-select-option>
-            </b-form-select>
+            <option class="bg-info" value="Todo">To Do</option>
+            <option class="bg-info" value="Done">Done</option>
+            </select>
           </div>
           <hr class="my-2">
           <div class="todo-card-text">
@@ -111,8 +111,8 @@ export default {
         this.todo = this.todos[this.index];
       };
     },
-    changeState(value) {
-      this.todos[this.index].state = value;
+    changeState(event) {
+      this.todos[this.index].state = event.target.value;
       localStorage.setItem('todos',JSON.stringify(this.todos));
     },
     deleteTodo() {

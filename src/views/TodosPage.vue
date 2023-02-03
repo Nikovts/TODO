@@ -161,7 +161,8 @@ export default {
       this.setProjects();
     },
     onRowSelected(items) {
-      this.$router.push({name: 'TodoViewPage', params: { id: items[0].id }});
+
+      this.$router.push({name: 'TodoViewPage', params: { id: items.id }});
     },
     parseDate(value) {
       let date = new Date(value);

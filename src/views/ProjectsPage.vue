@@ -1,5 +1,9 @@
 <template>
   <div class="projects">
+    <!-- <b-modal  v-model="openProjectModal" hide-footer title="Add New Project">
+      <div>Hello</div>
+  </b-modal> -->
+
     <add-project-modal v-if="openProjectModal" @addProject="addProject" @close="openProjectModal=false"/>
     <add-todo-modal v-if="openTodoModal" :options="options" @addTodo="addTodo" @close="openTodoModal=false,options=[]"/>
     <div>
@@ -66,15 +70,19 @@
 
 <script>
 
-import { BButton, BCard, BTable, BPagination } from 'bootstrap-vue';
+import { BButton, BCard, BTable, BPagination, BModal } from 'bootstrap-vue';
 import AddProjectModal from '../components/AddProjectModal.vue';
 import AddTodoModal from '../components/AddTodoModal.vue';
 
 export default {
   name: 'Projects',
-  components:  {BButton, BCard, BTable, BPagination, AddProjectModal, AddTodoModal},
+  components:  {BButton, BCard, BTable, BPagination, AddProjectModal, AddTodoModal, BModal},
   data(){
     return{
+      newProject: {
+        name: '',
+        todos: [],
+      },
       fields: [
         {
           key: 'id',
@@ -137,7 +145,8 @@ export default {
       this.setProjects();
     },
     onRowSelected(items) {
-      this.$router.push({name: 'TodoViewPage', params: { id: items[0].id }});
+
+      this.$router.push({name: 'TodoViewPage', params: { id: items.id }});
     },
   },
   computed: {

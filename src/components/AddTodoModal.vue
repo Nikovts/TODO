@@ -1,5 +1,6 @@
 <template>
-  <b-modal ref="add-todo" hide-footer title="Add New Todo" @close="$emit('close')">
+  <transition name="bounce" mode="out-in" >
+    <custom-modal v-if="showModal" @close="hideTodosModal">
     <b-form @submit="onSubmitTodo" @reset="onResetTodo">
       <b-form-group id="input-group-1" label="Todo name:" label-for="input-1">
         <b-form-input
@@ -22,35 +23,41 @@
         ></b-form-textarea>
       </b-form-group>
       <b-form-group id="input-group-3" label="Assign to" label-for="input-3">
-        <b-form-select
+        <select
           id="input-3"
           v-model="newTodo.assignee"
-          :options="assignees"
-          class="margin-y"
-        ></b-form-select>
+          class="margin-y form-select"
+          required
+        >
+          <!-- <option v-if="newTodo.assignee === 'Unassigned'" value="Unassigned">Please choose an User</option> -->
+          <option v-for="user,i in assignees" :key="i" :value="user">{{user}}</option>
+        </select>
       </b-form-group>
-      <b-form-group id="input-group-4" label="Please select project" label-for="input-4">
-        <b-form-select
+      <b-form-group id="input-group-4" label="Select project" label-for="input-4">
+        <select
           id="input-4"
           v-model="selectedProject"
-          :options="options"
           required
-          class="margin-y"
-        ></b-form-select>
+          class="margin-y form-select"
+        >
+          <!-- <option v-if="newTodo.assignee === 'Unassigned'" value="Unassigned">Please select project</option> -->
+          <option v-for="project,i in options" :key="i" :value="project.value">{{project.text}}</option>
+        </select>
       </b-form-group>
       <b-button type="submit" variant="primary" class="mr-2">Submit</b-button>
       <b-button type="reset" variant="danger">Reset</b-button>
     </b-form>
-  </b-modal>
+  </custom-modal>
+  </transition>
 </template>
 
 <script>
-
+Unassigned
 import { BButton, BModal, BForm, BFormSelect } from 'bootstrap-vue';
-
+import CustomModal from './CustomModal.vue'
 export default {
   name: 'AddTodoModal',
-  components: { BButton, BModal, BForm, BFormSelect, },
+  components: { BButton, BModal, BForm, BFormSelect, CustomModal },
   data(){
     return{
       newTodo: {
@@ -71,6 +78,7 @@ export default {
         'User 2',
         'User 3'
       ],
+      showModal: false
     }
   },
   props: {
@@ -87,11 +95,12 @@ export default {
     this.showTodosModal();
   },
   methods: {
-    showTodosModal(t) {
-      this.$refs['add-todo'].show();
+    showTodosModal() {
+      this.showModal = true;
     },
     hideTodosModal() {
-      this.$refs['add-todo'].hide();
+      this.showModal = false;
+      this.$emit('close');
     },
     onSubmitTodo(event) {
       event.preventDefault();

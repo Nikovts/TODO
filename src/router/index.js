@@ -1,11 +1,8 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory} from 'vue-router';
 import DashboardPage from '../views/DashboardPage.vue';
 import TodosPage from '../views/TodosPage.vue';
 import ProjectsPage from '../views/ProjectsPage.vue';
 import TodoViewPage from '../views/TodoViewPage.vue'
-
-Vue.use(VueRouter);
 
 const routes = [
   {
@@ -31,9 +28,8 @@ const routes = [
 
 ];
 
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
+const router = createRouter({
+  history: createWebHistory(),
   routes,
 });
 

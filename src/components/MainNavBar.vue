@@ -1,12 +1,12 @@
 <template>
   <b-navbar type="dark" variant="primary" class="main-navbar">
-    <b-navbar-brand to="/">Gravity Marketing Assignment</b-navbar-brand>
-    <b-navbar-nav>
-      <b-nav-item to="/projects">Projects</b-nav-item>
-      <b-nav-item to="/todos">Todos</b-nav-item>
+    <div class="navbar-brand" @click="$router.push('/')" >Gravity Marketing Assignment</div>
+    <b-navbar-nav class="navbar-links">
+      <div @click="$router.push('/projects')" class="navbar-brand nav-size">Projects</div>
+      <div @click="$router.push('/todos')" class="navbar-brand nav-size">Todos</div>
     </b-navbar-nav>
     <b-navbar-nav class="ml-auto">
-      <b-nav-text>
+      <b-nav-text class="navbar-brand">
         Nikovts
       </b-nav-text>
     </b-navbar-nav>
@@ -14,10 +14,11 @@
 </template>
 
 <script>
-import { BNavbar } from 'bootstrap-vue';
+import { BNavbar, BNavbarBrand, BNavItem, BNavbarNav, BNavText } from 'bootstrap-vue';
 
 export default {
-  components: { BNavbar }
+  components: { BNavbar,BNavbarBrand, BNavItem, BNavbarNav, BNavText },
+
 };
 </script>
 
@@ -27,6 +28,19 @@ export default {
   &.navbar{
     padding: 0.5rem 1rem;
   }
+}
+.navbar-brand{
+    color:#ebedf0;
+    cursor: pointer;
+  &.nav-size {
+    font-size: 1rem;
+  }
+}
+
+
+.navbar-links {
+  margin-left: 2rem;
+  align-items: center;
 }
 .ml-auto {
   margin-left: auto;
